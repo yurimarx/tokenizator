@@ -3,18 +3,18 @@ package tech.ymservices.tokenizator.api;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class TokenTicketAndTokenizedValueVO implements Serializable {
+public class TokenTicketAndTokenizedValue implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private String ticket;
 	private String tokenizedValue;
 	
-	public TokenTicketAndTokenizedValueVO() {
+	public TokenTicketAndTokenizedValue() {
 		super();
 	}
 	
-	public TokenTicketAndTokenizedValueVO(String ticket, String tokenizedValue) {
+	public TokenTicketAndTokenizedValue(String ticket, String tokenizedValue) {
 		super();
 		this.ticket = ticket;
 		this.tokenizedValue = tokenizedValue;
@@ -46,7 +46,7 @@ public class TokenTicketAndTokenizedValueVO implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TokenTicketAndTokenizedValueVO other = (TokenTicketAndTokenizedValueVO) obj;
+		TokenTicketAndTokenizedValue other = (TokenTicketAndTokenizedValue) obj;
 		return Objects.equals(ticket, other.ticket) && Objects.equals(tokenizedValue, other.tokenizedValue);
 	}
 

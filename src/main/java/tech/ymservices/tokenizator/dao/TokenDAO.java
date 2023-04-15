@@ -32,8 +32,8 @@ public class TokenDAO {
 				new TokenMapper(), ticket, tokenizedValue);
 	}
 	
-	public Token getTokenByTicket(String ticket) {
-		return jdbcTemplate.queryForObject(
+	public List<Token> getTokenByTicket(String ticket) {
+		return jdbcTemplate.query(
 				SQL_FIND_TICKET, 
 				new TokenMapper(), ticket);
 	}

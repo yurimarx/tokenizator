@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,12 +29,12 @@ public class TokenizatorAPI {
     }
 
     @GetMapping(value = "/query-id")
-    public Token findById(@RequestBody TokenTicketAndTokenizedValueVO id ) {
+    public Token findById(@RequestBody TokenTicketAndTokenizedValue id ) {
         return dao.getTokenByTicketAndTokenizedValue(id.getTicket(), id.getTokenizedValue());
     }
     
     @GetMapping(value = "/query-ticket/{ticket}")
-    public Token findById(@RequestParam String ticket) {
+    public List<Token> findByTicket(@RequestParam String ticket) {
         return dao.getTokenByTicket(ticket);
     }
 
@@ -45,16 +44,11 @@ public class TokenizatorAPI {
         return dao.createToken(token);
     }
 
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody Token token) {
-        dao.updateToken(token);
-    }
-
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestBody Token token) {
         dao.deleteToken(token);
     }
+    
 
 }
