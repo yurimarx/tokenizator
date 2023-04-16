@@ -54,7 +54,7 @@ $ docker run -p8080:8080 tokenizator:latest
 			        "withEmail":"true"
 			    }
 			}
-		}]
+		]
 		```
 	- See the results. You get a tokenizated value (tokenizedValueString) to store into your local database. 
 
