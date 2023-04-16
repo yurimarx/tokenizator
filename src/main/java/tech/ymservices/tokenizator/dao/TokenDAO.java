@@ -18,9 +18,9 @@ public class TokenDAO {
 	private final String SQL_FIND = "select * from Token where Ticket = ? and TokenizedValue = ?";
 	private final String SQL_FIND_TICKET = "select * from Token where Ticket = ?";
 	private final String SQL_DELETE = "delete from Token where Ticket = ? and TokenizedValue = ?";
-	private final String SQL_UPDATE = "update Token set Ticket = ?, OriginalValue = ?, TokenizedValue  = ? where Ticket = ? and TokenizedValue = ?";
+	private final String SQL_UPDATE = "update Token set Ticket = ?, OriginalValue = ?, TokenizedValue  = ?, Field = ? where Ticket = ? and TokenizedValue = ? and Field = ?";
 	private final String SQL_GET_ALL = "select * from Token";
-	private final String SQL_INSERT = "insert into Token(Ticket, OriginalValue, TokenizedValue) values(?,?,?)";
+	private final String SQL_INSERT = "insert into Token(Ticket, OriginalValue, TokenizedValue, Field) values(?,?,?,?)";
 
 	public TokenDAO(DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
@@ -47,11 +47,19 @@ public class TokenDAO {
 	}
 
 	public boolean updateToken(Token token) {
-		return jdbcTemplate.update(SQL_UPDATE, token.getTicket(), token.getOriginalValue(), token.getTokenizedValue(),
+		return jdbcTemplate.update(SQL_UPDATE, 
+				token.getTicket(), 
+				token.getOriginalValue(), 
+				token.getTokenizedValue(),
+				token.getField(),
 				token.getTicket(), token.getTokenizedValue()) > 0;
 	}
 
 	public boolean createToken(Token token) {
-		return jdbcTemplate.update(SQL_INSERT, token.getTicket(), token.getOriginalValue(), token.getTokenizedValue()) > 0;
+		return jdbcTemplate.update(SQL_INSERT, 
+				token.getTicket(), 
+				token.getOriginalValue(), 
+				token.getTokenizedValue(),
+				token.getField()) > 0;
 	}
 }
