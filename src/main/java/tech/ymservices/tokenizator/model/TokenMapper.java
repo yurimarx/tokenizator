@@ -13,6 +13,7 @@ public class TokenMapper implements RowMapper<Token> {
 		token.setOriginalValue(resultSet.getString("OriginalValue"));
 		token.setTokenizedValue(resultSet.getString("TokenizedValue"));
 		token.setTicket(resultSet.getString("Ticket"));
+		token.setField(resultSet.getString("Field"));
 		return token;
 	}
 

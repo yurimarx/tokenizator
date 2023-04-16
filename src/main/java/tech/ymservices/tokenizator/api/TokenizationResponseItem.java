@@ -7,6 +7,7 @@ public class TokenizationResponseItem {
 	private String originalValueString;
 	private Double originalValueNumber;
 	private Date originalValueDate;
+	private String field;
 	
 	private String tokenizedValueString;
 	private Double tokenizedValueNumber;
@@ -48,5 +49,11 @@ public class TokenizationResponseItem {
 	public void setTokenizedValueDate(Date tokenizedValueDate) {
 		this.tokenizedValueDate = tokenizedValueDate;
 	}
-
+	public String getField() {
+		return field;
+	}
+	public void setField(String field) {
+		this.field = field;
+	}
+	
 }

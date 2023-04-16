@@ -7,7 +7,7 @@ public class Token {
 	private String tokenizedValue;
 	private String originalValue;
 	private String ticket;
-	
+	private String field;
 	
 	public Token() {
 		super();
@@ -43,10 +43,18 @@ public class Token {
 	public void setTicket(String ticket) {
 		this.ticket = ticket;
 	}
+	
+	public String getField() {
+		return field;
+	}
+
+	public void setField(String field) {
+		this.field = field;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(originalValue, ticket);
+		return Objects.hash(originalValue, ticket, field);
 	}
 
 	@Override
@@ -58,12 +66,14 @@ public class Token {
 		if (getClass() != obj.getClass())
 			return false;
 		Token other = (Token) obj;
-		return Objects.equals(originalValue, other.originalValue) && Objects.equals(ticket, other.ticket);
+		return Objects.equals(originalValue, other.originalValue) && 
+			   Objects.equals(ticket, other.ticket) &&
+			   Objects.equals(field, other.field);
 	}
 
 	@Override
 	public String toString() {
-		return "Token [originalValue=" + originalValue + ", ticket=" + ticket + "]";
+		return "Token [originalValue=" + originalValue + ", ticket=" + ticket + ", field=" + field +"]";
 	}
 	
 }
