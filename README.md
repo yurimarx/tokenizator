@@ -45,6 +45,14 @@ $ docker run -p8080:8080 tokenizator:latest
 		    	}
 		    },
 		    {
+		     	"tokenType":"IPADDRESS",
+		     	"originalValueString":"192.168.0.1",
+		     	"settings": {
+		         	"classType":"CLASS_B",
+		         	"ipSize":"4"
+		     	}
+		    },
+		    {
 			    "tokenType":"PERSON",
 			    "originalValueString":"Yuri Marx Pereira Gomes",
 			    "settings": {

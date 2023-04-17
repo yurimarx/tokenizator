@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.andreinc.mockneat.types.enums.IPv4Type;
+import net.andreinc.mockneat.unit.networking.IPv4s;
+import net.andreinc.mockneat.unit.networking.IPv6s;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import net.datafaker.providers.base.DateAndTime;
@@ -74,6 +77,8 @@ public class TokenizatorAPI {
     			tokenizeWithStars(response, responseItemList, token);
     		} else if(token.getTokenType().equals(TokenType.PERSON)) {
     			tokenizeWithPerson(response, responseItemList, token);
+    		} else if(token.getTokenType().equals(TokenType.IPADDRESS)) {
+    			tokenizeWithIPAdress(response, responseItemList, token);
     		}
     	}
     	
@@ -100,6 +105,46 @@ public class TokenizatorAPI {
 		responseItem.setOriginalValueString(originalValue);
 		responseItem.setTokenizedValueString(tokenizedValue);
 		responseItem.setField("stars");
+		responseItemList.add(responseItem);
+		
+		response.setTokens(responseItemList);
+	}
+	
+	private void tokenizeWithIPAdress(TokenizationResponse response, 
+			List<TokenizationResponseItem> responseItemList,
+			TokenizationRequest token) {
+		
+		String classType = token.getSettings().get("classType");
+		Integer ipSize = Integer.valueOf(token.getSettings().get("ipSize"));
+		
+		
+		String tokenizedValue = "";
+		
+		if(ipSize == 4) {			
+			if(classType.equals("CLASS_A")) {
+				tokenizedValue = IPv4s.ipv4s().types(IPv4Type.CLASS_A).get();
+			} else if(classType.equals("CLASS_B")) {
+				tokenizedValue = IPv4s.ipv4s().types(IPv4Type.CLASS_B).get();
+			} else if(classType.equals("CLASS_C")) {
+				tokenizedValue = IPv4s.ipv4s().types(IPv4Type.CLASS_C).get();
+			} else if(classType.equals("CLASS_D")) {
+				tokenizedValue = IPv4s.ipv4s().types(IPv4Type.CLASS_D).get();
+			} else if(classType.equals("CLASS_E")) {
+				tokenizedValue = IPv4s.ipv4s().types(IPv4Type.CLASS_E).get();
+			} else {
+				tokenizedValue = IPv4s.ipv4s().get();
+			}
+		} else {
+			tokenizedValue = IPv6s.ipv6s().get();
+		}
+		
+		String originalValue = token.getOriginalValueString();
+		response.setTicket(getUUID());
+
+		TokenizationResponseItem responseItem = new TokenizationResponseItem();
+		responseItem.setOriginalValueString(originalValue);
+		responseItem.setTokenizedValueString(tokenizedValue);
+		responseItem.setField("IP");
 		responseItemList.add(responseItem);
 		
 		response.setTokens(responseItemList);
