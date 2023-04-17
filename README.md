@@ -30,7 +30,7 @@ $ docker run -p8080:8080 tokenizator:latest
 ## How to Run the Sample
 
 1. Open your Postman.
-2. Create a request to Tokenize using STARS and PERSON methods to this sensitive data sample:
+2. Create a request to Tokenize using STARS, IPADDRESS and PERSON methods to this sensitive data sample:
 	- Method: POST
 	- URL: http://localhost:8080/token/tokenize
 	- Body (JSON): 
