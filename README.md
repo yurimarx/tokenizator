@@ -30,19 +30,19 @@ $ docker run -p8080:8080 tokenizator:latest
 ## How to Run the Sample
 
 1. Open your Postman.
-2. Create a request to Tokenize using STARS, IPADDRESS and PERSON methods to this sensitive data sample:
+2. Create a request to Tokenize using STARS, PERSON, NUMBER, CREDITCARD, HASH, IPADDRESS and REGEX methods to this sensitive data sample:
 	- Method: POST
 	- URL: http://localhost:8080/token/tokenize
 	- Body (JSON): 
 		```
 		[
 		    {
-		    	"tokenType":"STARS",
-		    	"originalValueString":"545049405679",
-		    	"settings": {
-		        	"starsPosition":"1",
-		        	"starsQuantity":"4"
-		    	}
+		     	"tokenType":"STARS",
+		     	"originalValueString":"545049405679",
+		     	"settings": {
+		         	"starsPosition":"1",
+		         	"starsQuantity":"4"
+		     	}
 		    },
 		    {
 		     	"tokenType":"IPADDRESS",
@@ -53,15 +53,41 @@ $ docker run -p8080:8080 tokenizator:latest
 		     	}
 		    },
 		    {
-			    "tokenType":"PERSON",
-			    "originalValueString":"Yuri Marx Pereira Gomes",
-			    "settings": {
-			        "localeLanguage":"en",
-			        "localeCountry":"US",
-			        "withAddress":"true",
-			        "withEmail":"true"
-			    }
-			}
+		 	    "tokenType":"PERSON",
+		 	    "originalValueString":"Yuri Marx Pereira Gomes",
+		 	    "settings": {
+		 	        "localeLanguage":"en",
+		 	        "localeCountry":"US",
+		 	        "withAddress":"true",
+		 	        "withEmail":"true"
+		    	}
+		 	},
+		    {
+		 	    "tokenType":"NUMBER",
+		 	    "originalValueNumber":300.0,
+		 	    "settings": {
+		 	        "minRange":"100.0",
+		 	        "maxRange":"400.0"
+		 	    }
+		 	},
+		    {
+		 	    "tokenType":"CREDITCARD",
+		 	    "originalValueString":"4892879268763190",
+		 	    "settings": {
+		 	        "type":"VISA"
+		 	    }
+		 	},
+		    {
+		 	    "tokenType":"HASH",
+		 	    "originalValueString":"System Architect"
+		 	},
+		    {
+		 	    "tokenType":"REGEX",
+		 	    "originalValueString":"EI-54105-tjfdk",
+		 	    "settings": {
+		 	        "regex":"[A-Z]{2}-\\d{5}-[a-z]{5}"
+		 	    }
+		 	}
 		]
 		```
 	- See the results. You get a tokenizated value (tokenizedValueString) to store into your local database. 
