@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.andreinc.mockneat.types.enums.IPv4Type;
+import net.andreinc.mockneat.unit.financial.CreditCards;
 import net.andreinc.mockneat.unit.networking.IPv4s;
 import net.andreinc.mockneat.unit.networking.IPv6s;
+import net.andreinc.mockneat.unit.regex.Regex;
+import net.andreinc.mockneat.unit.types.Doubles;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import net.datafaker.providers.base.DateAndTime;
@@ -71,6 +75,7 @@ public class TokenizatorAPI {
     	TokenizationResponse response = new TokenizationResponse();
     	
     	List<TokenizationResponseItem> responseItemList = new ArrayList<TokenizationResponseItem>();
+    	response.setTicket(getUUID());
     	
     	for(TokenizationRequest token:request) {
     		if(token.getTokenType().equals(TokenType.STARS)) {
@@ -79,9 +84,16 @@ public class TokenizatorAPI {
     			tokenizeWithPerson(response, responseItemList, token);
     		} else if(token.getTokenType().equals(TokenType.IPADDRESS)) {
     			tokenizeWithIPAdress(response, responseItemList, token);
+    		} else if(token.getTokenType().equals(TokenType.NUMBER)) {
+    			tokenizeWithNumber(response, responseItemList, token);
+    		} else if(token.getTokenType().equals(TokenType.CREDITCARD)) {
+    			tokenizeWithCreditCard(response, responseItemList, token);
+    		} else if(token.getTokenType().equals(TokenType.HASH)) {
+    			tokenizeWithHash(response, responseItemList, token);
+    		} else if(token.getTokenType().equals(TokenType.REGEX)) {
+    			tokenizeWithRegex(response, responseItemList, token);
     		}
     	}
-    	
     	saveTokenizeResults(response);
     	
     	return response;
@@ -99,8 +111,7 @@ public class TokenizatorAPI {
 		String originalValue = token.getOriginalValueString();
 		String target = originalValue.substring(starsPosition-1, (starsPosition-1) + starsQuantity);
 		String tokenizedValue = originalValue.replace(target, starsString);
-		response.setTicket(getUUID());
-
+		
 		TokenizationResponseItem responseItem = new TokenizationResponseItem();
 		responseItem.setOriginalValueString(originalValue);
 		responseItem.setTokenizedValueString(tokenizedValue);
@@ -139,12 +150,97 @@ public class TokenizatorAPI {
 		}
 		
 		String originalValue = token.getOriginalValueString();
-		response.setTicket(getUUID());
-
+		
 		TokenizationResponseItem responseItem = new TokenizationResponseItem();
 		responseItem.setOriginalValueString(originalValue);
 		responseItem.setTokenizedValueString(tokenizedValue);
 		responseItem.setField("IP");
+		responseItemList.add(responseItem);
+		
+		response.setTokens(responseItemList);
+	}
+	
+	private void tokenizeWithNumber(TokenizationResponse response, 
+			List<TokenizationResponseItem> responseItemList,
+			TokenizationRequest token) {
+		
+		Double minRange = Double.valueOf(token.getSettings().get("minRange"));
+		Double maxRange = Double.valueOf(token.getSettings().get("maxRange"));
+		
+		
+		Double tokenizedValue = Doubles.doubles().range(minRange, maxRange).get();
+			
+		Double originalValue = token.getOriginalValueNumber();
+		
+		TokenizationResponseItem responseItem = new TokenizationResponseItem();
+		responseItem.setOriginalValueNumber(originalValue);
+		responseItem.setTokenizedValueNumber(tokenizedValue);
+		responseItem.setField("number");
+		responseItemList.add(responseItem);
+		
+		response.setTokens(responseItemList);
+	}
+	
+	private void tokenizeWithCreditCard(TokenizationResponse response, 
+			List<TokenizationResponseItem> responseItemList,
+			TokenizationRequest token) {
+		
+		String type = token.getSettings().get("type");
+		
+		String tokenizedValue = "";
+		
+		if(type.equals("VISA")) {
+			tokenizedValue = CreditCards.creditCards().visa().get();
+		} else if(type.equals("MASTERCARD")) {
+			tokenizedValue = CreditCards.creditCards().masterCard().get();
+		} else if(type.equals("AMEX")) {
+			tokenizedValue = CreditCards.creditCards().amex().get();
+		} else {
+			tokenizedValue = CreditCards.creditCards().get();
+		}
+		
+		String originalValue = token.getOriginalValueString();
+		
+		TokenizationResponseItem responseItem = new TokenizationResponseItem();
+		responseItem.setOriginalValueString(originalValue);
+		responseItem.setTokenizedValueString(tokenizedValue);
+		responseItem.setField("creditcard");
+		responseItemList.add(responseItem);
+		
+		response.setTokens(responseItemList);
+	}
+	
+	private void tokenizeWithHash(TokenizationResponse response, 
+			List<TokenizationResponseItem> responseItemList,
+			TokenizationRequest token) {
+		
+		String tokenizedValue = DigestUtils.sha256Hex(token.getOriginalValueString());;
+		
+		String originalValue = token.getOriginalValueString();
+		
+		TokenizationResponseItem responseItem = new TokenizationResponseItem();
+		responseItem.setOriginalValueString(originalValue);
+		responseItem.setTokenizedValueString(tokenizedValue);
+		responseItem.setField("hash");
+		responseItemList.add(responseItem);
+		
+		response.setTokens(responseItemList);
+	}
+	
+	private void tokenizeWithRegex(TokenizationResponse response, 
+			List<TokenizationResponseItem> responseItemList,
+			TokenizationRequest token) {
+		
+		String regex = token.getSettings().get("regex");
+		
+		String tokenizedValue = Regex.regex(regex).get();
+		
+		String originalValue = token.getOriginalValueString();
+		
+		TokenizationResponseItem responseItem = new TokenizationResponseItem();
+		responseItem.setOriginalValueString(originalValue);
+		responseItem.setTokenizedValueString(tokenizedValue);
+		responseItem.setField("regex");
 		responseItemList.add(responseItem);
 		
 		response.setTokens(responseItemList);
@@ -208,11 +304,20 @@ public class TokenizatorAPI {
     	
     	for(TokenizationResponseItem item:response.getTokens()) {    		
     		Token token = new Token();
-    		token.setOriginalValue(item.getOriginalValueString());
+    		if(item.getOriginalValueString() != null) {    			
+    			token.setOriginalValue(item.getOriginalValueString());
+    		} else if(item.getOriginalValueDate() != null) {
+    			token.setOriginalValue(item.getOriginalValueDate().toString());
+    		} else if(item.getOriginalValueNumber() != null) {
+    			token.setOriginalValue(item.getOriginalValueNumber().toString());
+    		}
+    		
     		if(item.getTokenizedValueString() != null) {    			
     			token.setTokenizedValue(item.getTokenizedValueString());
     		} else if(item.getTokenizedValueDate() != null) {
     			token.setTokenizedValue(item.getTokenizedValueDate().toString());
+    		} else if(item.getTokenizedValueNumber() != null) {
+    			token.setTokenizedValue(item.getTokenizedValueNumber().toString());
     		}
     		token.setTicket(response.getTicket());
     		token.setField(item.getField());
