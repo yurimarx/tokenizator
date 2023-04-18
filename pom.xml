@@ -80,7 +80,7 @@
 		    <artifactId>intersystems-jdbc</artifactId>
 		    <version>3.6.1</version>
 		    <scope>system</scope>
-		    <systemPath>${project.basedir}\src\main\resources\intersystems-jdbc-3.6.1.jar</systemPath>
+		    <systemPath>${project.basedir}/src/main/resources/intersystems-jdbc-3.6.1.jar</systemPath>
 		</dependency>
 
 	</dependencies>
